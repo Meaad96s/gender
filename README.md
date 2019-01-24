@@ -2,7 +2,7 @@
 
 ## Download packages
 ```
-pip glob
+pip install glob
 pip install opencv-python
 pip install numpy
 pip install matplotlib
