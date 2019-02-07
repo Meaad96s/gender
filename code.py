@@ -2,13 +2,14 @@ import cv2
 import glob
 #import face_alignment
 from skimage import io
-#from sklearn import preprocessing
+from sklearn.preprocessing import scale
+
 
 #def main() :
     # Read RGB image
 def readimages():
-    females = [cv2.imread(file) for file in glob.glob('C:\\Users\\MeaadAlrshoud\\Documents\\GitHub\\gender\\Female_Dataset\\*.jpg')]
-    males = [cv2.imread(file) for file in glob.glob('C:\\Users\\MeaadAlrshoud\\Documents\\GitHub\\gender\\Male_Dataset\\*.jpg')]
+    females = [cv2.imread(file) for file in glob.glob('C:\\Users\\FatenAldawish\\Documents\\GitHub\\gender\\Female_Dataset\\*.jpg')]
+    males = [cv2.imread(file) for file in glob.glob('C:\\Users\\FatenAldawish\\Documents\\GitHub\\gender\\Female_Dataset\\*.jpg')]
     return females,males
 
 
@@ -49,8 +50,9 @@ def haar(l1,l2):
 
     return f_haar, m_haar
 
-
-
+def spatial_scale(l1,l2):
+    f_scale = scale(l1)
+    m_scale = scale(l2)
 # Face Alignment
 
 #fa = face_alignment.FaceAlignment(face_alignment.LandmarksType._2D, flip_input=False)
@@ -62,6 +64,7 @@ def main():
     females,males=convertygrey(females,males)
     females,males=normalization(females,males)
     females,males=haar(females,males)
+    #spatial_scale(females,males)
     print("Found {0} faces!".format(len(females)))
     print("Found {0} faces!".format(len(males)))
 
