@@ -2,6 +2,8 @@ import cv2
 import glob
 #import face_alignment
 from skimage import io
+import numpy as np
+from numpy import ones, zeros, array
 #from sklearn import preprocessing
 
 #def main() :
@@ -40,6 +42,7 @@ def haar(l1,l2):
     minSize=(30, 30),
     flags = cv2.CASCADE_SCALE_IMAGE
     ) for img in l1  ]
+    print(f_haar)
 
     m_haar=[face_cascade.detectMultiScale(img,
         scaleFactor=1.1,
@@ -47,23 +50,46 @@ def haar(l1,l2):
         minSize=(30, 30),
         flags = cv2.CASCADE_SCALE_IMAGE) for img in l2]
 
+
     return f_haar, m_haar
 
 
 
 # Face Alignment
-
-#fa = face_alignment.FaceAlignment(face_alignment.LandmarksType._2D, flip_input=False)
-
-#input = io.imread('../test/assets/aflw-test.jpg')
+#def face_alignment(l1,l2):
+#    fa = face_alignment.FaceAlignment(face_alignment.LandmarksType._2D, flip_input=False)
+#    input = io.imread('../test/assets/aflw-test.jpg')
 #preds = fa.get_landmarks(m_haar)
+
+def annotation (l1,l2):
+    #ones= [1 for img in l1]
+    a= ones([len(l1),1])
+    #zeros=[0 for img in l2]
+    #print(a)
+    #np.append(l1,a)
+    #l1.append(a)
+
+    #print(l1)
+
+    #np.append(l2,zeros,axis=1)
+    return l1,l2
+
+
+
+
 def main():
     females,males=readimages()
+    print(females)
     females,males=convertygrey(females,males)
+    print(females)
     females,males=normalization(females,males)
+    print(females)
     females,males=haar(females,males)
+    #print(females.shape)
     print("Found {0} faces!".format(len(females)))
     print("Found {0} faces!".format(len(males)))
+    females,males=annotation(females,males)
+    #print(females[0])
 
 if __name__ == "__main__":
     main()
