@@ -173,6 +173,7 @@ def main():
 	print(females[1])
 
 
+
 	females = hog(females)
 	print(females[1])
     females,males=lbp(females,males)
