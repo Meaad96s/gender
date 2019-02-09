@@ -12,6 +12,7 @@ pip install scikit-image
 git clone https://github.com/1adrianb/face-alignment
 pip install -r requirements.txt
 python setup.py install
+pip install sklearn
 ```
 # Steps
 
