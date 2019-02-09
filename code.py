@@ -5,7 +5,8 @@ from skimage import io
 import numpy as np
 import pandas as pd
 from numpy import ones, zeros, array
-# from sklearn import preprocessing
+from skimage.feature import local_binary_pattern
+#from sklearn import preprocessing
 from sklearn.decomposition import PCA as PCA
 from sklearn.model_selection import train_test_split
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
@@ -118,6 +119,12 @@ def hog(l1):
 	# hog_image_rescaled = exposure.rescale_intensity(hog_image, in_range=(0, 10))
 	return f_hog
 
+def lbp(l1,l2):
+    radius = 3
+    n_points = 8 * radius
+    f_lbp= [local_binary_pattern(img, n_points, radius, method="uniform") for img in l1]
+    m_lbp=[local_binary_pattern(img, n_points, radius, method="uniform")for img in l2]
+    return f_lbp,m_lbp
 
 def dr_pca(x_train):
 	# X_std = StandardScaler().fit_transform(X)
@@ -166,8 +173,11 @@ def main():
 	print(females[1])
 
 
+
 	females = hog(females)
 	print(females[1])
+    females,males=lbp(females,males)
+    #print(males)
 
 	females = dr_pca(females)
 	# X = dataset.iloc[:, 0:4].values  #features

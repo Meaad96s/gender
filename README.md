@@ -16,7 +16,7 @@ pip install sklearn
 ```
 # Steps
 
-## Read images 
+## Read images
 
 RGB (Red, Green, Blue) are 8 bit each.
 The range for each individual colour is 0-255 (as 2^8 = 256 possibilities).
