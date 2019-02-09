@@ -4,6 +4,7 @@ import glob
 from skimage import io
 import numpy as np
 from numpy import ones, zeros, array
+from skimage.feature import local_binary_pattern
 #from sklearn import preprocessing
 
 #def main() :
@@ -76,7 +77,12 @@ def annotation (l1,l2):
     return l1,l2
 
 
-
+def lbp(l1,l2):
+    radius = 3
+    n_points = 8 * radius
+    f_lbp= [local_binary_pattern(img, n_points, radius, method="uniform") for img in l1]
+    m_lbp=[local_binary_pattern(img, n_points, radius, method="uniform")for img in l2]
+    return f_lbp,m_lbp
 
 def main():
     females,males=readimages()
@@ -84,12 +90,14 @@ def main():
     #print(males)
     females,males=normalization(females,males) #all are 1
     #print(males)
-    females,males=haar(females,males)
-    print(males[0])
+    #females,males=haar(females,males)
+    #print(males[0])
     #print("Found {0} faces!".format(len(females)))
     #print("Found {0} faces!".format(len(males)))
     #females,males=annotation(females,males)
     #print(females[0])
+    females,males=lbp(females,males)
+    print(males)
 
 if __name__ == "__main__":
     main()
