@@ -124,6 +124,7 @@ def lbp(l1,l2):
     n_points = 8 * radius
     f_lbp= [local_binary_pattern(img, n_points, radius, method="uniform") for img in l1]
     m_lbp=[local_binary_pattern(img, n_points, radius, method="uniform")for img in l2]
+
     return f_lbp,m_lbp
 
 def dr_pca(x_train):
