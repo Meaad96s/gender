@@ -116,7 +116,7 @@ def hog(l1):
 	f_hog = [hog.compute(img, winStride, padding, locations) for img in l1]
 	# Rescale histogram for better display
 	# hog_image_rescaled = exposure.rescale_intensity(hog_image, in_range=(0, 10))
-	return
+	return f_hog
 
 
 def dr_pca(x_train):
