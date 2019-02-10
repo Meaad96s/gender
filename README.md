@@ -13,6 +13,10 @@ git clone https://github.com/1adrianb/face-alignment
 pip install -r requirements.txt
 python setup.py install
 pip install sklearn
+
+On Conda Prompt
+conda install -c anaconda mkl
+conda install -c pytorch pytorch torchvision
 ```
 # Steps
 
