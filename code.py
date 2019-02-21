@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 
 
-# def main() :
+#def main() :
 # Read RGB image
 def readimages():
 	# females = [cv2.imread(file) for file in glob.glob('C:\\Users\\MeaadAlrshoud\\Documents\\GitHub\\gender\\Female_Dataset\\*.jpg')]
@@ -89,7 +89,7 @@ def annotation(l1, l2):
 	label1 = ones((len(l1), 1))
 	label2= zeros((len(l2), 1))
 	#zeros=[0 for img in l2]
-	# print(a)
+	print(label2.shape,l1.shape)
 	np.append(l1,label1)
 	# l1.append(a)
 	np.append(l2,label2,axis=1)
@@ -120,12 +120,11 @@ def hog(l1):
 	return f_hog
 
 def lbp(l1,l2):
-    radius = 3
-    n_points = 8 * radius
-    f_lbp= [local_binary_pattern(img, n_points, radius, method="uniform") for img in l1]
-    m_lbp=[local_binary_pattern(img, n_points, radius, method="uniform")for img in l2]
-
-    return f_lbp,m_lbp
+	radius = 3
+	n_points = 8 * radius
+	f_lbp= [local_binary_pattern(img, n_points, radius, method="uniform") for img in l1]
+	m_lbp=[local_binary_pattern(img, n_points, radius, method="uniform")for img in l2]
+	return f_lbp,m_lbp
 
 def dr_pca(x_train):
 	# X_std = StandardScaler().fit_transform(X)
@@ -164,20 +163,22 @@ def main():
 	females, males = readimages()
 	females, males = convertygrey(females, males)
 	# print(males)
-	females, males = normalization(females, males)  # all are 1
+	#females, males = normalization(females, males)  # all are 1
 	# print(males)
 	# females,males=haar(females,males)
 	# print(males)
 	# print("Found {0} faces!".format(len(females)))
 	# print("Found {0} faces!".format(len(males)))
-	females, males = annotation(females, males)
+	f = np.asarray(females, dtype=np.float32)
+	m = np.asarray(males, dtype=np.float32)
+	females, males = annotation(f, m)
 	print(females[1])
 
 
 
 	females = hog(females)
 	print(females[1])
-    females,males=lbp(females,males)
+	females,males=lbp(females,males)
     #print(males)
 
 	females = dr_pca(females)
