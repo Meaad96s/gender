@@ -29,11 +29,9 @@ def readimages():
 	# females = [cv2.imread(file) for file in glob.glob('C:\\Users\\MeaadAlrshoud\\Documents\\GitHub\\gender\\Female_Dataset\\*.jpg')]
 	# males = [cv2.imread(file) for file in glob.glob('C:\\Users\\MeaadAlrshoud\\Documents\\GitHub\\gender\\Male_Dataset\\*.jpg')]
 	females = [cv2.imread(file) for file in
-			   glob.glob('C:\\Users\\MeaadAlrshoud\\Documents\\GitHub\\gender\\Female_Dataset\\*.jpg')]
+			   glob.glob('C:/Users/FatenAldawish/Documents/GitHub/gender/Female_Dataset/*.jpg')]
 	males = [cv2.imread(file) for file in
-			 glob.glob('C:\\Users\\MeaadAlrshoud\\Documents\\GitHub\\gender\\Male_Dataset\\*.jpg')]
-
-
+			 glob.glob('C:/Users/FatenAldawish/Documents/GitHub/gender/Male_Dataset/*.jpg')]
 	return females, males
 
 
@@ -92,18 +90,19 @@ def haar(l1, l2):
 
 def annotation(l1, l2):
 
-	f = [l1=np.expand_dims(file,0) for file in l1]
-	m = [l2=np.expand_dims(file,0) for file in l2]
+	f = [np.expand_dims(file,0) for file in l1]
+	m = [np.expand_dims(file,0) for file in l2]
 	#ones= [1 for img in l1]
 	#print(len(ones))
 	print("L1")
 	#print(l1)
-	label1 = ones((len(l1), 1),dtype='float')
-	label2= zeros((len(l2), 1),dtype='float')
+	#label1 = ones((len(l1), 1),dtype='float')
+	#label2= zeros((len(l2), 1),dtype='float')
+
 	#zeros=[0 for img in l2]
-	print(label1.shape)
-	print(l1)
-	np.column_stack((l1,label1))
+	#print(label1.shape)
+	
+	#np.column_stack((l1,label1)) this one
 	# l1.append(a)
 	#np.append(l2,label2,axis=1)
 	#print(label2.shape,l1.shape)
