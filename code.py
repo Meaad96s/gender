@@ -90,24 +90,22 @@ def haar(l1, l2):
 
 # def spatial-scale():
 
-def annotation(l1, l2):
+def annotation(l1):
 
-	f = [l1=np.expand_dims(file,0) for file in l1]
-	m = [l2=np.expand_dims(file,0) for file in l2]
+	#f =np.expand_dims(l1,0)
+	#m =np.expand_dims(l2,0)
 	#ones= [1 for img in l1]
-	#print(len(ones))
-	print("L1")
-	#print(l1)
 	label1 = ones((len(l1), 1),dtype='float')
-	label2= zeros((len(l2), 1),dtype='float')
+	#label2= zeros((len(l2), 1),dtype='float')
 	#zeros=[0 for img in l2]
-	print(label1.shape)
-	print(l1)
-	np.column_stack((l1,label1))
+
+	#np.column_stack((l1,label1))
 	# l1.append(a)
+	#np.append(np.atleast_3d(l1), label1, axis=1).shape
+	np.append(l1,label1,axis=1)
 	#np.append(l2,label2,axis=1)
 	#print(label2.shape,l1.shape)
-	return l1, l2
+	return l1
 
 
 def hog(l1):
@@ -171,6 +169,8 @@ def dr_pca(x_train):
 	ldaclf = clf.fit(X_train_lda, y_train)
 	print("lda train score", ldaclf.score(X_train_lda, y_train))
 	print("lda test score", ldaclf.score(X_test_lda, y_test))'''
+	return X_train_pca
+
 
 def svm(X_train, X_test, y_train, y_test):
 	clf=svm.SVC(gamma='auto')
@@ -183,8 +183,12 @@ def experiment1():
 	females, males = convertygrey(females, males)
 	f = np.asarray(females, dtype=np.float32)
 	m = np.asarray(males, dtype=np.float32)
-	females, males = annotation(f, m)
-	print(females)
+
+	nsamples, nx, ny = f.shape
+	d2_train_dataset = f.reshape((nsamples,nx*ny))
+	fe=dr_pca(d2_train_dataset)
+	females= annotation(fe)
+	np.savetxt("females.csv", females, delimiter=",")
 
 def main():
 	experiment1()
