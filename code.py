@@ -17,6 +17,10 @@ from skimage.feature import hog
 from skimage import data, exposure
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+# import SVM
+from sklearn.svm import SVC
+from sklearn.model_selection import cross_val_score, cross_val_predict
+from sklearn.model_selection import train_test_split
 
 
 #def main() :
@@ -28,6 +32,8 @@ def readimages():
 			   glob.glob('C:\\Users\\MeaadAlrshoud\\Documents\\GitHub\\gender\\Female_Dataset\\*.jpg')]
 	males = [cv2.imread(file) for file in
 			 glob.glob('C:\\Users\\MeaadAlrshoud\\Documents\\GitHub\\gender\\Male_Dataset\\*.jpg')]
+
+
 	return females, males
 
 
@@ -85,14 +91,22 @@ def haar(l1, l2):
 # def spatial-scale():
 
 def annotation(l1, l2):
-	# ones= [1 for img in l1]
-	label1 = ones((len(l1), 1))
-	label2= zeros((len(l2), 1))
+
+	f = [l1=np.expand_dims(file,0) for file in l1]
+	m = [l2=np.expand_dims(file,0) for file in l2]
+	#ones= [1 for img in l1]
+	#print(len(ones))
+	print("L1")
+	#print(l1)
+	label1 = ones((len(l1), 1),dtype='float')
+	label2= zeros((len(l2), 1),dtype='float')
 	#zeros=[0 for img in l2]
-	print(label2.shape,l1.shape)
-	np.append(l1,label1)
+	print(label1.shape)
+	print(l1)
+	np.column_stack((l1,label1))
 	# l1.append(a)
-	np.append(l2,label2,axis=1)
+	#np.append(l2,label2,axis=1)
+	#print(label2.shape,l1.shape)
 	return l1, l2
 
 
@@ -158,10 +172,22 @@ def dr_pca(x_train):
 	print("lda train score", ldaclf.score(X_train_lda, y_train))
 	print("lda test score", ldaclf.score(X_test_lda, y_test))'''
 
+def svm(X_train, X_test, y_train, y_test):
+	clf=svm.SVC(gamma='auto')
+	y_pred = clf.fit(X_train, y_train).predict(X_test)
+	scores = cross_val_score(clf, X, y, cv=10)
+	print (scores)
 
-def main():
+def experiment1():
 	females, males = readimages()
 	females, males = convertygrey(females, males)
+	f = np.asarray(females, dtype=np.float32)
+	m = np.asarray(males, dtype=np.float32)
+	females, males = annotation(f, m)
+	print(females)
+
+def main():
+	experiment1()
 	# print(males)
 	#females, males = normalization(females, males)  # all are 1
 	# print(males)
@@ -169,19 +195,12 @@ def main():
 	# print(males)
 	# print("Found {0} faces!".format(len(females)))
 	# print("Found {0} faces!".format(len(males)))
-	f = np.asarray(females, dtype=np.float32)
-	m = np.asarray(males, dtype=np.float32)
-	females, males = annotation(f, m)
-	print(females[1])
 
 
 
-	females = hog(females)
-	print(females[1])
-	females,males=lbp(females,males)
-    #print(males)
 
-	females = dr_pca(females)
+
+
 	# X = dataset.iloc[:, 0:4].values  #features
 	# y = dataset.iloc[:, 4].values #labels
 	# X_train, X_test, y_train, y_test = train_test_split(females,y,test_size=0.2,random_state=0)
