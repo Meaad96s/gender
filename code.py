@@ -6,11 +6,12 @@ import numpy as np
 import pandas as pd
 from numpy import ones, zeros, array
 from skimage.feature import local_binary_pattern
-#from sklearn import preprocessing
+#from sklearn import preprocessing & PCA
 from sklearn.decomposition import PCA as PCA
 from sklearn.model_selection import train_test_split
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import scale
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import accuracy_score
 from skimage.feature import hog
@@ -58,27 +59,21 @@ def normalization(l1, l2):
 
 # Haar face detetction
 def haar(l1, l2):
-	face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+	face_cascade = cv2.CascadeClassifier('C:\\Users\\MeaadAlrshoud\\Documents\\GitHub\\gender\\haarcascade_frontalface_default.xml')
 	# Detect faces in the image
-	f_haar = [np.array(face_cascade.detectMultiScale(
-		img,
-		scaleFactor=1.1,
-		minNeighbors=5,
-		minSize=(30, 30),
-		flags=cv2.CASCADE_SCALE_IMAGE
-	)) for img in l1]
-
-	faces = face_cascade.detectMultiScale(gray, 1.3, 5)
-	for (x, y, w, h) in faces:
-		img = cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
-		roi_gray = gray[y:y + h, x:x + w]
-		roi_color = img[y:y + h, x:x + w]
+	ll1 = np.array(l1, dtype='uint8')
+	ll2= np.array(l2,dtype='uint8')
+	f_haar = [np.array(face_cascade.detectMultiScale(img,
+													 scaleFactor=1.1,
+													 minNeighbors=5,
+													 minSize=(30, 30),
+													 flags=cv2.CASCADE_SCALE_IMAGE)) for img in ll1]
 
 	m_haar = [np.array(face_cascade.detectMultiScale(img,
 													 scaleFactor=1.1,
 													 minNeighbors=5,
 													 minSize=(30, 30),
-													 flags=cv2.CASCADE_SCALE_IMAGE)) for img in l2]
+													 flags=cv2.CASCADE_SCALE_IMAGE)) for img in ll2]
 	return f_haar, m_haar
 
 
@@ -96,16 +91,17 @@ def annotation(l1):
 	#m =np.expand_dims(l2,0)
 	#ones= [1 for img in l1]
 	label1 = ones((len(l1), 1),dtype='float')
+
 	#label2= zeros((len(l2), 1),dtype='float')
 	#zeros=[0 for img in l2]
 
 	#np.column_stack((l1,label1))
 	# l1.append(a)
 	#np.append(np.atleast_3d(l1), label1, axis=1).shape
-	np.append(l1,label1,axis=1)
+	data=np.append(l1,label1,axis=1)
 	#np.append(l2,label2,axis=1)
 	#print(label2.shape,l1.shape)
-	return l1
+	return data
 
 
 def hog(l1):
@@ -126,6 +122,7 @@ def hog(l1):
 	winStride = (8, 8)
 	padding = (8, 8)
 	locations = ((10, 20),)
+	l1 = np.array(l1, dtype='uint8')
 	f_hog = [hog.compute(img, winStride, padding, locations) for img in l1]
 	# Rescale histogram for better display
 	# hog_image_rescaled = exposure.rescale_intensity(hog_image, in_range=(0, 10))
@@ -183,12 +180,20 @@ def experiment1():
 	females, males = convertygrey(females, males)
 	f = np.asarray(females, dtype=np.float32)
 	m = np.asarray(males, dtype=np.float32)
+	f,m=haar(f,m)
+	f=hog(f)
+	m=hog(m)
 
 	nsamples, nx, ny = f.shape
 	d2_train_dataset = f.reshape((nsamples,nx*ny))
-	fe=dr_pca(d2_train_dataset)
-	females= annotation(fe)
-	np.savetxt("females.csv", females, delimiter=",")
+
+	pca=dr_pca(d2_train_dataset)
+	#females= annotation(d2_train_dataset)
+	label1 = ones((len(f), 1),dtype='float')
+	label2= zeros((len(m), 1),dtype='float')
+	#np.append(np.atleast_3d(l1), label1, axis=1).shape
+	l=np.vstack((label1,label2))
+	# X_train, X_test, y_train, y_test = train_test_split(females,y,test_size=0.2,random_state=0)
 
 def main():
 	experiment1()
