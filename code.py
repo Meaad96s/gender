@@ -1,9 +1,8 @@
 import cv2
 import glob
-# import face_alignment
+#import face_alignment
 from skimage import io
 import numpy as np
-import pandas as pd
 from numpy import ones, zeros, array
 from skimage.feature import local_binary_pattern
 #from sklearn import preprocessing & PCA
@@ -25,36 +24,28 @@ from sklearn.model_selection import train_test_split
 
 
 #def main() :
-# Read RGB image
+    # Read RGB image
 def readimages():
-	# females = [cv2.imread(file) for file in glob.glob('C:\\Users\\MeaadAlrshoud\\Documents\\GitHub\\gender\\Female_Dataset\\*.jpg')]
-	# males = [cv2.imread(file) for file in glob.glob('C:\\Users\\MeaadAlrshoud\\Documents\\GitHub\\gender\\Male_Dataset\\*.jpg')]
-	females = [cv2.imread(file) for file in
-			   glob.glob('C:\\Users\\MeaadAlrshoud\\Documents\\GitHub\\gender\\Female_Dataset\\*.jpg')]
-	males = [cv2.imread(file) for file in
-			 glob.glob('C:\\Users\\MeaadAlrshoud\\Documents\\GitHub\\gender\\Male_Dataset\\*.jpg')]
+    females = [cv2.imread(file) for file in glob.glob('C:\\Users\\FatenAldawish\\Documents\\GitHub\\gender\\Female_Dataset\\*.jpg')]
+    males = [cv2.imread(file) for file in glob.glob('C:\\Users\\FatenAldawish\\Documents\\GitHub\\gender\\Female_Dataset\\*.jpg')]
+    return females,males
 
 
-	return females, males
 
-
-# convert to greyscale
-def convertygrey(l1, l2):
-	# Applying Grayscale filter to image
-	f_grey = [cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) for img in l1]
-	m_grey = [cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) for img in l2]
-	f_grey = [np.array(np.float32(img)) / 255.0 for img in f_grey]
-	m_grey = [np.array(np.float32(img)) / 255.0 for img in m_grey]
-	return f_grey, m_grey
+#convert to greyscale
+def convertygrey(l1,l2):
+    f_grey= [cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) for img in l1]
+    m_grey=[cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) for img in l2]
+    return f_grey,m_grey
 
 
 # print the images
 
 # Normalization
-def normalization(l1, l2):
-	normalized_f = [cv2.normalize(img, None, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX) for img in l1]
-	normalized_m = [cv2.normalize(img, None, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX) for img in l2]
-	return normalized_f, normalized_m
+def normalization (l1,l2):
+    normalized_f = [np.array(cv2.normalize(img, None, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX)) for img in l1]
+    normalized_m =[np.array(cv2.normalize(img, None, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX)) for img in l2]
+    return normalized_f,normalized_m
 
 
 # Haar face detetction
@@ -76,26 +67,32 @@ def haar(l1, l2):
 													 flags=cv2.CASCADE_SCALE_IMAGE)) for img in ll2]
 	return f_haar, m_haar
 
-
+def spatial_scale(l1,l2):
+    f_scale = scale(l1)
+    m_scale = scale(l2)
 # Face Alignment
-# def face_alignment(l1,l2):
+#def face_alignment(l1,l2):
 #    fa = face_alignment.FaceAlignment(face_alignment.LandmarksType._2D, flip_input=False)
 #    input = io.imread('../test/assets/aflw-test.jpg')
 # preds = fa.get_landmarks(m_haar)
 
 # def spatial-scale():
 
-def annotation(l1):
+def annotation(l1, l2):
 
-	#f =np.expand_dims(l1,0)
-	#m =np.expand_dims(l2,0)
+	f = [np.expand_dims(file,0) for file in l1]
+	m = [np.expand_dims(file,0) for file in l2]
 	#ones= [1 for img in l1]
+	#print(len(ones))
+	print("L1")
+	#print(l1)
 	label1 = ones((len(l1), 1),dtype='float')
 
 	#label2= zeros((len(l2), 1),dtype='float')
 	#zeros=[0 for img in l2]
-
-	#np.column_stack((l1,label1))
+	print(label1.shape)
+	print(l1)
+	np.column_stack((l1,label1))
 	# l1.append(a)
 	#np.append(np.atleast_3d(l1), label1, axis=1).shape
 	data=np.append(l1,label1,axis=1)
@@ -166,8 +163,6 @@ def dr_pca(x_train):
 	ldaclf = clf.fit(X_train_lda, y_train)
 	print("lda train score", ldaclf.score(X_train_lda, y_train))
 	print("lda test score", ldaclf.score(X_test_lda, y_test))'''
-	return X_train_pca
-
 
 def svm(X_train, X_test, y_train, y_test):
 	clf=svm.SVC(gamma='auto')
@@ -209,27 +204,5 @@ def main():
 
 
 
-
-	# X = dataset.iloc[:, 0:4].values  #features
-	# y = dataset.iloc[:, 4].values #labels
-	# X_train, X_test, y_train, y_test = train_test_split(females,y,test_size=0.2,random_state=0)
-	# X_train = StandardScaler().fit_transform(X_train)
-	# X_test = StandardScaler().fit_transform(X_test)
-
-	'''classifier = RandomForestClassifier(max_depth=2, random_state=0)
-	classifier.fit(X_train, y_train)
-	y_pred = classifier.predict(X_test)
-	cm = confusion_matrix(y_test, y_pred)
-	print(cm)
-	print('Accuracy' + str(accuracy_score(y_test, y_pred)))'''
-
-
-###LDA:
-# females,males= LDA(females,males)
-
-# randomly order the data
-# seed(0)
-# shuffle(raw_data)
-
 if __name__ == "__main__":
-	main()
+    main()
