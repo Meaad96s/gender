@@ -24,6 +24,9 @@ from sklearn.svm import SVC
 from sklearn.model_selection import cross_val_score, cross_val_predict
 from sklearn.model_selection import train_test_split
 
+##HOG
+import dlib
+
 
 
 #def main() :
@@ -128,10 +131,16 @@ def hog(l1):
     padding = (8, 8)
     locations = ((10, 20),)
     l1 = np.array(l1, dtype='uint8')
-    f_hog = [hog.compute(img, winStride, padding, locations) for img in l1]
+    result = [hog.compute(img, winStride, padding, locations) for img in l1]
     # Rescale histogram for better display
     # hog_image_rescaled = exposure.rescale_intensity(hog_image, in_range=(0, 10))
-    return f_hog
+
+    #face_detector = dlib.get_frontal_face_detector()
+
+    # Run the HOG face detector on the image data.
+    # The result will be the bounding boxes of the faces in our image.
+    result2 = [face_detector(img, 1) for img in l1]
+    return result
 
 def lbp(l1,l2):
     radius = 3
@@ -190,6 +199,7 @@ def experiment1():
     f,m=haar(f,m)
     f=hog(f)
     m=hog(m)
+    print(m)
     #nsamples, nx, ny = f.shape
     #d2_train_dataset = f.reshape((nsamples,nx*ny))
 
@@ -200,6 +210,8 @@ def experiment1():
     l=np.vstack((label1,label2))
     data=np.append(f,m)
     X = pd.DataFrame(data)
+    np.savetxt('dataf.csv', f,delimiter=',')
+    np.savetxt('labels.csv',l, delimiter=',')
     print(l.shape)
     y = pd.Series(l)
 
