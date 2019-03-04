@@ -23,21 +23,17 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 from sklearn.model_selection import cross_val_score, cross_val_predict
 from sklearn.model_selection import train_test_split
-<<<<<<< HEAD
 
 ##HOG
 import dlib
 
-=======
-import pandas as pd
->>>>>>> 8b97006349d763888986ef46e61fd87a975ced39
 
 
 #def main() :
     # Read RGB image
 def readimages():
-    females = [cv2.imread(file) for file in glob.glob('C:\\Users\\fatenAldawish\\Documents\\GitHub\\gender\\Female_Dataset\\*.jpg')]
-    males = [cv2.imread(file) for file in glob.glob('C:\\Users\\fatenAldawish\\Documents\\GitHub\\gender\\Female_Dataset\\*.jpg')]
+    females = [cv2.imread(file) for file in glob.glob('C:\\Users\\MeaadAlrshoud\\Documents\\GitHub\\gender\\Female_Dataset\\*.jpg')]
+    males = [cv2.imread(file) for file in glob.glob('C:\\Users\\MeaadAlrshoud\\Documents\\GitHub\\gender\\Female_Dataset\\*.jpg')]
     return females,males
 
 
@@ -138,13 +134,9 @@ def hog(l1):
     result = [hog.compute(img, winStride, padding, locations) for img in l1]
     # Rescale histogram for better display
     # hog_image_rescaled = exposure.rescale_intensity(hog_image, in_range=(0, 10))
-
-    #face_detector = dlib.get_frontal_face_detector()
-
-    # Run the HOG face detector on the image data.
-    # The result will be the bounding boxes of the faces in our image.
-    result2 = [face_detector(img, 1) for img in l1]
     return result
+
+
 
 def lbp(l1,l2):
     radius = 3
@@ -153,7 +145,7 @@ def lbp(l1,l2):
     m_lbp=[local_binary_pattern(img, n_points, radius, method="uniform")for img in l2]
     return f_lbp,m_lbp
 
-def dr_pca(x,t):
+def dr_pca(X_train, X_test, y_train,y_test):
     # X_std = StandardScaler().fit_transform(X)
     # mean_vec = np.mean(X_std, axis=0)
     # cov_mat = (X_std - mean_vec).T.dot((X_std - mean_vec)) / (X_std.shape[0]-1)
@@ -161,39 +153,33 @@ def dr_pca(x,t):
     # Y = sklearn_pca.fit_transform(X_std)
 
     # find the principal components
-    N_COMPONENTS = 4
+    N_COMPONENTS = 2
     pca = PCA(n_components=N_COMPONENTS, random_state=0, svd_solver='randomized')
-    X_train_pca = pca.fit_transform(x)
-    print(t.shape)
-    X_test_pca = pca.transform(t)
+    X_train_pca = pca.fit_transform(X_train,y_train)
+    print('explained variance ratio (first two components): %s' % str(pca.explained_variance_ratio_))
+    X_test_pca = pca.transform(X_test)
+    #print("pca test score", pca.score(X_test_pca,y_test ))
+    #print("pca train score", pca.score(X_train_pca, y_train))
     return X_train_pca,X_test_pca
-    '''pcaclf = clf.fit(X_train_pca, y_train)
-    print("pca test score", pcaclf.score(X_test_pca, y_test))
-    print("pca train score", pcaclf.score(X_train_pca, y_train))'''
+
     # X_r = pca.fit(X).transform(X)
     # Percentage of variance explained for each components
-    print('explained variance ratio (first two components): %s' % str(pca.explained_variance_ratio_))
 
-    # def LDA():
-    '''females,males= LDA(females,males)
-    lda = LinearDiscriminantAnalysis(n_components=2)
-    X_r2 = lda.fit(X, y).transform(X)
 
+def dr_LDA(X_train, X_test, y_train,y_test):
+    lda = LDA(n_components=2)
+    #X_train_lda = lda.fit_transform(X_test, y_test)
+    #X_test_lda = lda.transform(X_test)
     X_train_lda = lda.fit_transform(X_train, y_train)
     X_test_lda = lda.transform(X_test)
-
-    ldaclf = clf.fit(X_train_lda, y_train)
-    print("lda train score", ldaclf.score(X_train_lda, y_train))
-    print("lda test score", ldaclf.score(X_test_lda, y_test))'''
-
-
-
+    #print("lda train score", lda.score(X_train_lda, y_train))
+    #print("lda test score", ldac.score(X_test_lda, y_test))
+    return X_test_lda,X_train_lda
 
 def svm(X_train, X_test, y_train, y_test):
     clf=SVC(gamma='auto')
     y_pred = clf.fit(X_train, y_train).predict(X_test)
-    scores = cross_val_score(clf, X_test, y_test, cv=10)
-    print (scores)
+    scores = cross_val_score(clf, X_train, y_train, cv=10)
     return scores
 
 def experiment1():
@@ -201,14 +187,13 @@ def experiment1():
     females, males = convertygrey(females, males)
     f = np.asarray(females, dtype=np.float32)
     m = np.asarray(males, dtype=np.float32)
-
     f,m=haar(f,m)
-    f = np.asarray(f, dtype=np.float32)
-    m = np.asarray(m, dtype=np.float32)
+    #f = np.asarray(females, dtype=np.uint8)
+    #m = np.asarray(males, dtype=np.uint8)
     #print(f)
-    f=hog(f)
-    m=hog(m)
-    print(m)
+    #f=hog(f)
+    #m=hog(m)
+
     #nsamples, nx, ny = f.shape
     #d2_train_dataset = f.reshape((nsamples,nx*ny))
     #females= annotation(d2_train_dataset)
@@ -216,14 +201,8 @@ def experiment1():
     label2= zeros((len(m), 1),dtype='float')
     #np.append(np.atleast_3d(l1), label1, axis=1).shape
     l=np.vstack((label1,label2))
-<<<<<<< HEAD
-    data=np.append(f,m)
-    X = pd.DataFrame(data)
-    np.savetxt('dataf.csv', f,delimiter=',')
-    np.savetxt('labels.csv',l, delimiter=',')
-    print(l.shape)
-    y = pd.Series(l)
-=======
+    f = np.asarray(f, dtype=np.float32)
+    m = np.asarray(m, dtype=np.float32)
     d=np.vstack((f,m))
     #data=np.append(f,m)
     #X = pd.DataFrame(data)
@@ -232,12 +211,13 @@ def experiment1():
     y = l
     #print(y.shape,TwoDim_dataset.shape )
     X_train, X_test, y_train, y_test = train_test_split(TwoDim_dataset,y,test_size=0.2,random_state=0)
-    pca_train,pca_test=dr_pca(X_train,X_test)
-    score = svm(pca_train, pca_test, y_train, y_test)
->>>>>>> 8b97006349d763888986ef46e61fd87a975ced39
-
-
-
+    y_train=np.ravel(y_train)
+    y_test=np.ravel(y_test)
+    #pca_train,pca_test=dr_pca(X_train,X_test,y_train,y_test)
+    lda_train,lda_test=dr_LDA(X_train, X_test, y_train, y_test)
+    print(lda_train.shape,lda_test.shape)
+    scores = svm(lda_train, lda_test, y_train, y_test)
+    print(scores)
 
 def main():
     experiment1()
