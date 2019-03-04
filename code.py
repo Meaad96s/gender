@@ -23,14 +23,14 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 from sklearn.model_selection import cross_val_score, cross_val_predict
 from sklearn.model_selection import train_test_split
-
+import pandas as pd
 
 
 #def main() :
     # Read RGB image
 def readimages():
-    females = [cv2.imread(file) for file in glob.glob('C:\\Users\\MeaadAlrshoud\\Documents\\GitHub\\gender\\Female_Dataset\\*.jpg')]
-    males = [cv2.imread(file) for file in glob.glob('C:\\Users\\MeaadAlrshoud\\Documents\\GitHub\\gender\\Female_Dataset\\*.jpg')]
+    females = [cv2.imread(file) for file in glob.glob('C:\\Users\\fatenAldawish\\Documents\\GitHub\\gender\\Female_Dataset\\*.jpg')]
+    males = [cv2.imread(file) for file in glob.glob('C:\\Users\\fatenAldawish\\Documents\\GitHub\\gender\\Female_Dataset\\*.jpg')]
     return females,males
 
 
@@ -148,7 +148,7 @@ def dr_pca(x,t):
     # Y = sklearn_pca.fit_transform(X_std)
 
     # find the principal components
-    N_COMPONENTS = 2
+    N_COMPONENTS = 4
     pca = PCA(n_components=N_COMPONENTS, random_state=0, svd_solver='randomized')
     X_train_pca = pca.fit_transform(x)
     print(t.shape)
@@ -177,35 +177,43 @@ def dr_pca(x,t):
 
 
 def svm(X_train, X_test, y_train, y_test):
-    clf=svm.SVC(gamma='auto')
+    clf=SVC(gamma='auto')
     y_pred = clf.fit(X_train, y_train).predict(X_test)
-    scores = cross_val_score(clf, X, y, cv=10)
+    scores = cross_val_score(clf, X_test, y_test, cv=10)
     print (scores)
+    return scores
 
 def experiment1():
     females, males = readimages()
     females, males = convertygrey(females, males)
     f = np.asarray(females, dtype=np.float32)
     m = np.asarray(males, dtype=np.float32)
+
     f,m=haar(f,m)
+    f = np.asarray(f, dtype=np.float32)
+    m = np.asarray(m, dtype=np.float32)
+    #print(f)
     f=hog(f)
     m=hog(m)
     #nsamples, nx, ny = f.shape
     #d2_train_dataset = f.reshape((nsamples,nx*ny))
-
     #females= annotation(d2_train_dataset)
     label1 = ones((len(f), 1),dtype='float')
     label2= zeros((len(m), 1),dtype='float')
     #np.append(np.atleast_3d(l1), label1, axis=1).shape
     l=np.vstack((label1,label2))
-    data=np.append(f,m)
-    X = pd.DataFrame(data)
-    print(l.shape)
-    y = pd.Series(l)
+    d=np.vstack((f,m))
+    #data=np.append(f,m)
+    #X = pd.DataFrame(data)
+    dataset_size = len(d)
+    TwoDim_dataset = d.reshape(dataset_size,-1)
+    y = l
+    #print(y.shape,TwoDim_dataset.shape )
+    X_train, X_test, y_train, y_test = train_test_split(TwoDim_dataset,y,test_size=0.2,random_state=0)
+    pca_train,pca_test=dr_pca(X_train,X_test)
+    score = svm(pca_train, pca_test, y_train, y_test)
 
-    X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2,random_state=0)
 
-    pca=dr_pca(X_train,X_test)
 
 
 def main():
