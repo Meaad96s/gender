@@ -27,6 +27,9 @@ from sklearn.model_selection import train_test_split
 ##HOG
 import dlib
 
+from PIL import Image
+from resizeimage import resizeimage
+
 
 
 #def main() :
@@ -45,7 +48,11 @@ def convertygrey(l1,l2):
     return f_grey,m_grey
 
 
-# print the images
+def resizing (l1,l2):
+    size = (16, 16)
+    fit_and_resized_image1 = [resizeimage.resize_cover(image, [16, 16]) for image in l1]
+    fit_and_resized_image2 = [resizeimage.resize_cover(image, [16, 16]) for image in l2]
+    return fit_and_resized_image1,fit_and_resized_image2
 
 # Normalization
 def normalization (l1,l2):
@@ -74,8 +81,8 @@ def haar(l1, l2):
     return f_haar, m_haar
 
 def spatial_scale(l1,l2):
-    f_scale = scale(l1)
-    m_scale = scale(l2)
+    #f_scale = scale(l1)
+    #m_scale = scale(l2)
     sc_X = StandardScaler()
     sc_y = StandardScaler()
     X = sc_X.fit_transform(l1)
@@ -184,7 +191,12 @@ def svm(X_train, X_test, y_train, y_test):
 
 def experiment1():
     females, males = readimages()
+    print(len(females))
     females, males = convertygrey(females, males)
+    f = np.asarray(females, dtype=np.float32)
+    m = np.asarray(males, dtype=np.float32)
+    females, males = resizing(females, males)
+    females, males = spatial_scale(females, males)
     f = np.asarray(females, dtype=np.float32)
     m = np.asarray(males, dtype=np.float32)
     f,m=haar(f,m)
@@ -193,7 +205,6 @@ def experiment1():
     #print(f)
     #f=hog(f)
     #m=hog(m)
-
     #nsamples, nx, ny = f.shape
     #d2_train_dataset = f.reshape((nsamples,nx*ny))
     #females= annotation(d2_train_dataset)
@@ -201,9 +212,11 @@ def experiment1():
     label2= zeros((len(m), 1),dtype='float')
     #np.append(np.atleast_3d(l1), label1, axis=1).shape
     l=np.vstack((label1,label2))
+    print(len(m))
     f = np.asarray(f, dtype=np.float32)
     m = np.asarray(m, dtype=np.float32)
-    d=np.vstack((f,m))
+    print(m.shape)
+    d=np.vstack((females,males))
     #data=np.append(f,m)
     #X = pd.DataFrame(data)
     dataset_size = len(d)
